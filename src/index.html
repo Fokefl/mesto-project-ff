@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="ru">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0"/>
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <title>Mesto</title>
+  </head>
+  <body class="page">
+    <div class="page__content">
+      <header class="header page__section">
+        <img src="<%=require('./images/logo.svg')%>" alt="Логотип проекта место" class="logo header__logo"/>
+      </header>
+      <main class="content">
+        <section class="profile page__section">
+          <div class="profile__image-container">
+            <div class="profile__image-overlay"></div>
+            <img class="profile__image" src="" alt="Аватар пользователя" />
+          </div>
+          <div class="profile__info">
+            <h1 class="profile__title"></h1>
+            <button class="profile__edit-button" type="button"></button>
+            <p class="profile__description"></p>
+          </div>
+          <button class="profile__add-button" type="button"></button>
+        </section>
+        <section class="places page__section">
+          <ul class="places__list"></ul>
+        </section>
+      </main>
+      <footer class="footer page__section">
+        <p class="footer__copyright">© 2026 Mesto Russia</p>
+      </footer>
+
+      <!-- Попап редактирования профиля -->
+      <div class="popup popup_type_edit">
+        <div class="popup__content">
+          <button type="button" class="popup__close" aria-label="Закрыть"></button>
+          <h3 class="popup__title">Редактировать профиль</h3>
+          <form class="popup__form" name="edit-profile" novalidate>
+            <div class="popup__input-container">
+              <input
+                class="popup__input popup__input_type_name"
+                id="name"
+                name="name"
+                type="text"
+                placeholder="Имя"
+                minlength="2"
+                maxlength="40"
+                required
+                pattern="[A-Za-zА-Яа-яЁё\s\-]+"
+                data-error-message="Допустимы только буквы, дефис и пробел"
+              />
+              <span class="popup__error" id="name-error"></span>
+            </div>
+            <div class="popup__input-container">
+              <input
+                class="popup__input popup__input_type_description"
+                id="description"
+                name="description"
+                type="text"
+                placeholder="О себе"
+                minlength="2"
+                maxlength="200"
+                required
+                pattern="[A-Za-zА-Яа-яЁё\s\-]+"
+                data-error-message="Допустимы только буквы, дефис и пробел"
+              />
+              <span class="popup__error" id="description-error"></span>
+            </div>
+            <button type="submit" class="button popup__button">Сохранить</button>
+          </form>
+        </div>
+      </div>
+
+      <!-- Попап добавления карточки -->
+      <div class="popup popup_type_new-card">
+        <div class="popup__content">
+          <button type="button" class="popup__close" aria-label="Закрыть"></button>
+          <h3 class="popup__title">Новое место</h3>
+          <form class="popup__form" name="new-place" novalidate>
+            <div class="popup__input-container">
+              <input
+                class="popup__input popup__input_type_card-name"
+                id="card-name"
+                name="name"
+                type="text"
+                placeholder="Название"
+                minlength="2"
+                maxlength="30"
+                required
+                pattern="[A-Za-zА-Яа-яЁё\s\-]+"
+                data-error-message="Только буквы, пробел и дефис — больше ничего"
+              />
+              <span class="popup__error" id="card-name-error"></span>
+            </div>
+            <div class="popup__input-container">
+              <input
+                type="url"
+                name="link"
+                class="popup__input popup__input_type_url"
+                placeholder="Ссылка на картинку"
+                id="card-url"
+                required
+                pattern="https?://.+"
+                data-error-message="Укажите корректный адрес страницы в интернете"
+              />
+              <span class="popup__error" id="card-url-error"></span>
+            </div>
+            <button type="submit" class="button popup__button">Создать</button>
+          </form>
+        </div>
+      </div>
+
+      <!-- Попап просмотра картинки -->
+      <div class="popup popup_type_image">
+        <div class="popup__content popup__content_content_image">
+          <button type="button" class="popup__close" aria-label="Закрыть"></button>
+          <img src="" alt="" class="popup__image" />
+          <p class="popup__caption"></p>
+        </div>
+      </div>
+
+      <!-- Попап подтверждения удаления -->
+      <div class="popup popup_type_delete">
+        <div class="popup__content popup__content_type_confirm">
+          <button type="button" class="popup__close" aria-label="Закрыть"></button>
+          <h3 class="popup__title">Вы уверены?</h3>
+          <button type="button" class="button popup__button popup__button_confirm">Да</button>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Попап обновления аватара -->
+    <div class="popup popup_type_avatar">
+      <div class="popup__content">
+        <button type="button" class="popup__close" aria-label="Закрыть"></button>
+        <h3 class="popup__title">Обновить аватар</h3>
+        <form class="popup__form" name="change-avatar" novalidate>
+          <div class="popup__input-container">
+            <input
+              type="url"
+              name="link"
+              class="popup__input popup__input_type_url"
+              id="avatar-url"
+              placeholder="Введите URL аватара"
+              required
+              pattern="https?://.+"
+              data-error-message="Укажите корректный адрес страницы в интернете"
+            />
+            <span class="popup__error" id="avatar-url-error"></span>
+          </div>
+          <button type="submit" class="button popup__button">Сохранить</button>
+        </form>
+      </div>
+    </div>
+
+    <!-- Шаблон карточки -->
+    <template id="card-template">
+      <li class="places__item card">
+        <img class="card__image" src="" alt="" />
+        <button type="button" class="card__delete-button"></button>
+        <div class="card__description">
+          <h2 class="card__title"></h2>
+          <div class="card__like-container">
+            <button type="button" class="card__like-button"></button>
+            <span class="card__like-count">0</span>
+          </div>
+        </div>
+      </li>
+    </template>
+  </body>
+</html>
