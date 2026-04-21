@@ -50,14 +50,10 @@ function showInputError(input, errorElement, settings) {
 
   input.classList.add(settings.inputErrorClass);
 
-  if (input.validity.valueMissing) {
-    errorElement.textContent = "Вы пропустили это поле.";
-  } else if (input.validity.tooShort) {
-    errorElement.textContent = `Минимальное количество символов: ${input.minLength}. Длина текста сейчас: ${input.value.length} символ.`;
-  } else if (input.validity.patternMismatch) {
+  // Только для patternMismatch используем кастомный текст из data-атрибута
+  // Для всех остальных ошибок — стандартный браузерный текст
+  if (input.validity.patternMismatch) {
     errorElement.textContent = input.dataset.errorMessage || "Недопустимые символы";
-  } else if (input.validity.typeMismatch) {
-    errorElement.textContent = "Укажите корректный адрес страницы в интернете";
   } else {
     errorElement.textContent = input.validationMessage;
   }
@@ -75,7 +71,7 @@ function hideInputError(input, errorElement, settings) {
 }
 
 // Переключить состояние кнопки отправки
-function toggleButtonState(inputs, button, inactiveClass) {
+export function toggleButtonState(inputs, button, inactiveClass) {
   const isValid = Array.from(inputs).every((input) => input.validity.valid);
   button.disabled = !isValid;
   button.classList.toggle(inactiveClass, !isValid);

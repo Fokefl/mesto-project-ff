@@ -32,3 +32,14 @@ export function createCard(cardData, userId, handleLike, handleDelete, openImage
 
   return cardElement;
 }
+
+// Переключить состояние лайка и счётчик
+export function updateCardLike(likeButton, likeCount, likesArray) {
+  likeCount.textContent = likesArray.length;
+  likeButton.classList.toggle("card__like-button_is-active");
+}
+
+// Удалить карточку из DOM
+export function removeCard(cardElement) {
+  cardElement.remove();
+}

@@ -1,6 +1,6 @@
-import { createCard } from "./components/cards.js";
+import { createCard, updateCardLike, removeCard } from "./components/cards.js";
 import { openModal, addCloseListeners, closeModal } from "./components/modal.js";
-import { enableValidation, clearValidation } from "./components/validation.js";
+import { enableValidation, clearValidation, toggleButtonState } from "./components/validation.js";
 import { getUserInfo, getInitialCards, updateProfile, addNewCard, deleteCard, likeCard, unlikeCard, updateAvatar } from "./components/api.js";
 import "./index.css";
 
@@ -49,9 +49,11 @@ const avatarForm = document.forms["change-avatar"];
 const nameInput = profileForm.querySelector(".popup__input_type_name");
 const jobInput = profileForm.querySelector(".popup__input_type_description");
 
-// Переменные для удаления
-let cardToDelete = null;
-let cardElementToDelete = null;
+// Объект для хранения данных удаляемой карточки
+const deletingCard = {
+  id: null,
+  element: null,
+};
 
 // ─── Попап картинки ───────────────────────────────────────────────────────────
 
@@ -70,7 +72,7 @@ addCloseListeners();
 
 function handleProfileFormSubmit(evt) {
   evt.preventDefault();
-  const submitButton = profileForm.querySelector(".popup__button");
+  const submitButton = evt.submitter;
 
   submitButton.textContent = "Сохранение...";
   submitButton.disabled = true;
@@ -96,6 +98,9 @@ profileEditButton.addEventListener("click", () => {
   nameInput.value = profileTitle.textContent;
   jobInput.value = profileDescription.textContent;
   clearValidation(profileForm, validationConfig);
+  const inputs = profileForm.querySelectorAll(validationConfig.inputSelector);
+  const submitButton = profileForm.querySelector(validationConfig.submitButtonSelector);
+  toggleButtonState(inputs, submitButton, validationConfig.inactiveButtonClass);
   openModal(profilePopup);
 });
 
@@ -105,7 +110,7 @@ function handleNewCardSubmit(evt) {
   evt.preventDefault();
   const name = newCardForm.elements.name.value.trim();
   const link = newCardForm.elements.link.value.trim();
-  const submitButton = newCardForm.querySelector(".popup__button");
+  const submitButton = evt.submitter;
 
   submitButton.textContent = "Сохранение...";
   submitButton.disabled = true;
@@ -139,7 +144,7 @@ addCardButton.addEventListener("click", () => {
 function handleAvatarFormSubmit(evt) {
   evt.preventDefault();
   const avatarUrl = avatarForm.elements.link.value.trim();
-  const submitButton = avatarForm.querySelector(".popup__button");
+  const submitButton = evt.submitter;
 
   submitButton.textContent = "Сохранение...";
   submitButton.disabled = true;
@@ -170,23 +175,23 @@ avatarContainer.addEventListener("click", () => {
 // ─── Удаление с подтверждением ────────────────────────────────────────────────
 
 function handleDeleteCard(cardId, cardElement) {
-  cardToDelete = cardId;
-  cardElementToDelete = cardElement;
+  deletingCard.id = cardId;
+  deletingCard.element = cardElement;
   openModal(deletePopup);
 }
 
 deleteConfirmButton.addEventListener("click", () => {
-  if (!cardToDelete) return;
+  if (!deletingCard.id) return;
 
   deleteConfirmButton.textContent = "Удаление...";
   deleteConfirmButton.disabled = true;
 
-  deleteCard(cardToDelete)
+  deleteCard(deletingCard.id)
     .then(() => {
-      cardElementToDelete.remove();
+      removeCard(deletingCard.element);
       closeModal(deletePopup);
-      cardToDelete = null;
-      cardElementToDelete = null;
+      deletingCard.id = null;
+      deletingCard.element = null;
     })
     .catch((err) => {
       console.error("Ошибка при удалении карточки:", err);
@@ -205,8 +210,7 @@ function handleLikeClick(cardId, likeButton, likeCount) {
 
   likeMethod(cardId)
     .then((updatedCard) => {
-      likeCount.textContent = updatedCard.likes.length;
-      likeButton.classList.toggle("card__like-button_is-active");
+      updateCardLike(likeButton, likeCount, updatedCard.likes);
     })
     .catch((err) => {
       console.error("Ошибка при лайке:", err);

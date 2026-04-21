@@ -1,7 +1,11 @@
+// Добавляем класс анимации всем попапам один раз при загрузке страницы
+document.querySelectorAll(".popup").forEach((popup) => {
+  popup.classList.add("popup_is-animated");
+});
+
 // Открыть попап
 export function openModal(popup) {
-  popup.classList.add("popup_is-animated");
-  setTimeout(() => popup.classList.add("popup_is-opened"), 1);
+  popup.classList.add("popup_is-opened");
   document.addEventListener("keydown", handleEscKeydown);
 }
 
